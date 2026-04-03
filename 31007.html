@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 스마트 홈 제어 센터</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        .sensor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .card { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 5px solid #3498db; }
+        .card.warning { border-left-color: #e74c3c; }
+        .value { font-size: 1.5em; font-weight: bold; display: block; margin-top: 5px; }
+        .unit { font-size: 0.6em; color: #7f8c8d; }
+        .status-box { margin-top: 20px; padding: 15px; border-radius: 10px; background: #e8f4fd; }
+        .btn-group { display: flex; justify-content: space-around; margin-top: 20px; }
+        button { padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-on { background-color: #2ecc71; color: white; }
+        .btn-off { background-color: #95a5a6; color: white; }
+        button:hover { opacity: 0.8; }
+        .footer { font-size: 0.8em; text-align: center; margin-top: 20px; color: #95a5a6; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Smart AI Vent & Light</h2>
+    
+    <div class="sensor-grid">
+        <div class="card" id="co2-card">
+            <span class="label">CO2 농도</span>
+            <span class="value" id="co2-val">450 <span class="unit">ppm</span></span>
+        </div>
+        <div class="card">
+            <span class="label">인간 감지 조명</span>
+            <span class="value" id="light-status" style="color: #f1c40f;">OFF</span>
+        </div>
+    </div>
+
+    <div class="status-box">
+        <strong>시스템 상태:</strong> <span id="sys-msg">AI가 공기질을 분석 중입니다...</span>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-on" onclick="toggleFan('on')">환기 가동</button>
+        <button class="btn-off" onclick="toggleFan('off')">작동 정지</button>
+    </div>
+
+    <div class="footer">
+        ESP32 AI IoT 프로젝트 | 실시간 데이터 연동 중
+    </div>
+</div>
+
+<script>
+    // ESP32로부터 데이터를 실시간으로 받아오는 함수 (가상)
+    function updateData() {
+        // 실제 구현 시 fetch('/data') 등을 통해 ESP32 센서값을 가져옵니다.
+        // 예시를 위해 랜덤 데이터를 시뮬레이션합니다.
+        const co2 = Math.floor(Math.random() * (1200 - 400) + 400);
+        document.getElementById('co2-val').innerHTML = co2 + ' <span class="unit">ppm</span>';
+        
+        const card = document.getElementById('co2-card');
+        const msg = document.getElementById('sys-msg');
+        
+        if(co2 > 1000) {
+            card.classList.add('warning');
+            msg.innerText = "🚨 CO2 농도가 높습니다! 환기 시스템 가동.";
+            msg.style.color = "#e74c3c";
+        } else {
+            card.classList.remove('warning');
+            msg.innerText = "✅ 공기질이 쾌적합니다.";
+            msg.style.color = "#2ecc71";
+        }
+    }
+
+    function toggleFan(state) {
+        console.log("환기 시스템 " + state + " 요청");
+        // fetch('/fan?state=' + state) 등의 코드로 ESP32 핀 제어 명령을 보냅니다.
+        alert("환기 시스템을 " + (state === 'on' ? '켭니다.' : '끕니다.'));
+    }
+
+    // 3초마다 데이터 갱신
+    setInterval(updateData, 3000);
+</script>
+
+</body>
+</html>
